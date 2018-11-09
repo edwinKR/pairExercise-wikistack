@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { Page } = require('../models');
 const { addPage } = require('../views');
 module.exports = router;
 
@@ -11,11 +12,25 @@ router.get('/', (req, res, next) => {
   }
 });
 
-router.post('/', (req, res, next) => {
-  res.send('got to POST /wiki/');
+router.post('/', async (req, res, next) => {
+  //assocations....
+
+  const page = new Page({
+    title: req.body.title,
+    content: req.body.content,
+    slug: req.body.slug
+  });
+
+  try {
+    await page.save();
+    console.log('=======>>>>', page);
+    res.redirect('/');
+  } catch (error) {
+    next(error);
+  }
+  // res.send('got to POST /wiki/');
 });
 
 router.get('/add', (req, res, next) => {
-  console.log('=========req.bodty====', req.body);
   res.send(addPage());
 });
